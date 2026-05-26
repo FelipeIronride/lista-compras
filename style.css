@@ -376,7 +376,6 @@ tr:last-child td { border-bottom: none; }
 @media (max-width: 600px) {
   .app { padding: 1rem 0.75rem; }
 
-  /* Cards em 2x2 no mobile */
   .cards {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
@@ -385,35 +384,33 @@ tr:last-child td { border-bottom: none; }
   .card { padding: 0.875rem 1rem; }
   .card-value { font-size: 22px; }
 
-  /* Formulário empilhado no mobile */
   .form-section { padding: 1rem; }
 
   .form-row {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto auto;
+    grid-template-columns: 1fr;
     gap: 10px;
   }
 
-  /* Produto ocupa linha inteira */
-  .form-row .form-group:first-child {
-    grid-column: 1 / -1;
-  }
-
-  /* Botão adicionar ocupa linha inteira */
   .btn-add {
-    grid-column: 1 / -1;
     justify-content: center;
     height: 48px;
     font-size: 16px;
   }
 
-  /* Abas full width no mobile */
   .tab-row { gap: 6px; }
   .tab-btn {
     flex: 1;
     text-align: center;
     padding: 10px 8px;
     font-size: 13px;
+  }
+
+  .table-wrap {
+    overflow-x: hidden;
+  }
+
+  table {
+    min-width: unset;
   }
 }
 
