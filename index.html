@@ -40,34 +40,16 @@
     <div class="form-row">
       <div class="form-group">
         <label for="inp-nome">Produto</label>
-        <input
-          type="text"
-          id="inp-nome"
-          placeholder="Nome do produto"
-          autocomplete="off"
-          autocorrect="off"
-          autocapitalize="words"
-        />
+        <input type="text" id="inp-nome" placeholder="Nome do produto"
+          autocomplete="off" autocorrect="off" autocapitalize="words" />
       </div>
       <div class="form-group">
         <label for="inp-qtd">Qtd</label>
-        <input
-          type="number"
-          id="inp-qtd"
-          placeholder="1"
-          min="1"
-          value="1"
-          inputmode="numeric"
-        />
+        <input type="number" id="inp-qtd" placeholder="1" min="1" value="1" inputmode="numeric" />
       </div>
       <div class="form-group">
         <label for="inp-preco">Preço (R$) — opcional</label>
-        <input
-          type="text"
-          id="inp-preco"
-          placeholder="0,00"
-          inputmode="decimal"
-        />
+        <input type="text" id="inp-preco" placeholder="0,00" inputmode="decimal" />
       </div>
       <button class="btn-add" onclick="addItem()">+ Adicionar</button>
     </div>
@@ -75,12 +57,8 @@
 
   <!-- ABAS -->
   <div class="tab-row">
-    <button class="tab-btn active" id="tab-lista" onclick="switchTab('lista')">
-      Lista
-    </button>
-    <button class="tab-btn" id="tab-historico" onclick="switchTab('historico')">
-      Histórico de preços
-    </button>
+    <button class="tab-btn active" id="tab-lista" onclick="switchTab('lista')">Lista</button>
+    <button class="tab-btn" id="tab-historico" onclick="switchTab('historico')">Histórico de preços</button>
   </div>
 
   <!-- VIEW: LISTA -->
@@ -98,21 +76,15 @@
           </tr>
         </thead>
         <tbody id="tbody-lista">
-          <tr>
-            <td colspan="6" class="empty-msg">Adicione itens para começar sua lista.</td>
-          </tr>
+          <tr><td colspan="6" class="empty-msg">Carregando...</td></tr>
         </tbody>
         <tfoot id="tfoot-lista" style="display:none">
           <tr class="tfoot-row">
             <td colspan="3">
-              <div class="td-inner td-right" style="color:var(--text2);font-size:12px">
-                Total estimado
-              </div>
+              <div class="td-inner td-right" style="color:var(--text2);font-size:12px">Total estimado</div>
             </td>
             <td>
-              <div class="td-inner td-right" style="color:var(--blue);font-size:15px;font-weight:600" id="total-valor">
-                R$ 0,00
-              </div>
+              <div class="td-inner td-right" style="color:var(--blue);font-size:15px;font-weight:600" id="total-valor">R$ 0,00</div>
             </td>
             <td colspan="2"></td>
           </tr>
@@ -136,16 +108,14 @@
           </tr>
         </thead>
         <tbody id="tbody-hist">
-          <tr>
-            <td colspan="6" class="empty-msg">Nenhum histórico ainda.</td>
-          </tr>
+          <tr><td colspan="6" class="empty-msg">Nenhum histórico ainda.</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
-</div><!-- /.app -->
+</div>
 
-<script src="app.js"></script>
+<script type="module" src="app.js"></script>
 </body>
 </html>

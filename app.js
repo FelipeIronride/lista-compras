@@ -1,13 +1,41 @@
 /* =============================================
-   LISTA DE COMPRAS — app.js
+   LISTA DE COMPRAS — app.js (Firebase Realtime)
    ============================================= */
 
-let items = [];
-let hist = [];
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  doc,
+  onSnapshot,
+  setDoc,
+  deleteDoc,
+  updateDoc,
+  serverTimestamp,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+/* ── CONFIG FIREBASE ── */
+const firebaseConfig = {
+  apiKey: "AIzaSyAX2Q4WROUX3JbJq9EJHDBwBoAUhPSAX2U",
+  authDomain: "lista-compras-4fff2.firebaseapp.com",
+  projectId: "lista-compras-4fff2",
+  storageBucket: "lista-compras-4fff2.firebasestorage.app",
+  messagingSenderId: "341817759359",
+  appId: "1:341817759359:web:1389580f9d244fbb75914a",
+  measurementId: "G-PTTVVMJK4P"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+/* ── ESTADO LOCAL ── */
+let items   = [];
+let hist    = [];
 let priceMap = {};
 
 /* ── UTILITÁRIOS ── */
-
 function fmt(value) {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
@@ -20,25 +48,39 @@ function parsePrice(str) {
 
 function formatDate(date) {
   return (
-    date.toLocaleDateString('pt-BR') +
-    ' ' +
+    date.toLocaleDateString('pt-BR') + ' ' +
     date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
   );
 }
 
-/* ── HISTÓRICO ── */
+function gerarId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
 
-function registrarHistorico(nome, preco, qtd, origem) {
-  const key = nome.toLowerCase();
-  const prev = priceMap[key];
-  const variation = prev !== undefined ? preco - prev : null;
-  priceMap[key] = preco;
-  hist.unshift({ nome, preco, qtd, ts: new Date(), variation, origem });
+/* ── FIRESTORE: ESCUTAR MUDANÇAS EM TEMPO REAL ── */
+function iniciarListeners() {
+  // Itens da lista
+  const itemsQuery = query(collection(db, 'items'), orderBy('criadoEm', 'asc'));
+  onSnapshot(itemsQuery, (snapshot) => {
+    items = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    render();
+  });
+
+  // Histórico de preços
+  const histQuery = query(collection(db, 'historico'), orderBy('ts', 'desc'));
+  onSnapshot(histQuery, (snapshot) => {
+    hist = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Reconstruir priceMap
+    priceMap = {};
+    [...hist].reverse().forEach(h => {
+      priceMap[h.nome.toLowerCase()] = h.preco;
+    });
+    renderHistorico();
+  });
 }
 
 /* ── ADICIONAR ITEM ── */
-
-function addItem() {
+async function addItem() {
   const nomeEl  = document.getElementById('inp-nome');
   const qtdEl   = document.getElementById('inp-qtd');
   const precoEl = document.getElementById('inp-preco');
@@ -49,28 +91,54 @@ function addItem() {
   const qtd   = parseInt(qtdEl.value) || 1;
   const preco = parsePrice(precoEl.value);
 
-  if (preco !== null) {
-    registrarHistorico(nome, preco, qtd, 'formulário');
+  // Verifica se já existe
+  const existing = items.find(i => i.nome.toLowerCase() === nome.toLowerCase());
+
+  if (existing) {
+    await updateDoc(doc(db, 'items', existing.id), {
+      qtd: existing.qtd + qtd,
+      ...(preco !== null ? { preco } : {})
+    });
+  } else {
+    const id = gerarId();
+    await setDoc(doc(db, 'items', id), {
+      nome,
+      qtd,
+      preco: preco ?? null,
+      done: false,
+      criadoEm: serverTimestamp()
+    });
   }
 
-  const existing = items.find(i => i.nome.toLowerCase() === nome.toLowerCase());
-  if (existing) {
-    existing.qtd += qtd;
-    if (preco !== null) existing.preco = preco;
-  } else {
-    items.push({ id: Date.now(), nome, qtd, preco, done: false });
+  if (preco !== null) {
+    await registrarHistorico(nome, preco, qtd, 'formulário');
   }
 
   nomeEl.value  = '';
   qtdEl.value   = '1';
   precoEl.value = '';
   nomeEl.focus();
-  render();
+}
+
+/* ── REGISTRAR HISTÓRICO ── */
+async function registrarHistorico(nome, preco, qtd, origem) {
+  const key  = nome.toLowerCase();
+  const prev = priceMap[key];
+  const variation = prev !== undefined ? preco - prev : null;
+
+  const id = gerarId();
+  await setDoc(doc(db, 'historico', id), {
+    nome,
+    preco,
+    qtd,
+    origem,
+    variation: variation ?? null,
+    ts: serverTimestamp()
+  });
 }
 
 /* ── ATUALIZAR PREÇO NA TABELA ── */
-
-function onPriceBlur(el, id) {
+async function onPriceBlur(el, id) {
   const item = items.find(i => i.id === id);
   if (!item) return;
 
@@ -78,40 +146,32 @@ function onPriceBlur(el, id) {
 
   if (novoPreco !== null) {
     if (novoPreco !== item.preco) {
-      registrarHistorico(item.nome, novoPreco, item.qtd, 'tabela');
+      await registrarHistorico(item.nome, novoPreco, item.qtd, 'tabela');
     }
-    item.preco = novoPreco;
-    el.value = novoPreco.toLocaleString('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+    await updateDoc(doc(db, 'items', id), { preco: novoPreco });
+    el.value = novoPreco.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     el.classList.add('filled');
   } else if (el.value === '' || el.value === '0,00') {
-    item.preco = null;
+    await updateDoc(doc(db, 'items', id), { preco: null });
     el.value = '';
     el.classList.remove('filled');
   }
-
-  render();
 }
 
 /* ── MARCAR / DESMARCAR COLETADO ── */
-
-function toggleItem(id) {
+async function toggleItem(id) {
   const item = items.find(i => i.id === id);
-  if (item) item.done = !item.done;
-  render();
+  if (item) {
+    await updateDoc(doc(db, 'items', id), { done: !item.done });
+  }
 }
 
 /* ── REMOVER ITEM ── */
-
-function removeItem(id) {
-  items = items.filter(i => i.id !== id);
-  render();
+async function removeItem(id) {
+  await deleteDoc(doc(db, 'items', id));
 }
 
-/* ── VARIAÇÃO DO ITEM (para exibir na tabela) ── */
-
+/* ── VARIAÇÃO ── */
 function getVariacaoItem(nome) {
   const registros = hist.filter(h => h.nome.toLowerCase() === nome.toLowerCase());
   if (registros.length < 2) return null;
@@ -123,17 +183,12 @@ function buildVarBadge(varNum, preco) {
     return '<span style="color:var(--text3);font-size:11px">—</span>';
   }
   const pct = ((varNum / preco) * 100).toFixed(1);
-  if (varNum > 0) {
-    return `<span class="var-badge var-up">▲ +${pct}%</span>`;
-  }
-  if (varNum < 0) {
-    return `<span class="var-badge var-down">▼ ${pct}%</span>`;
-  }
+  if (varNum > 0) return `<span class="var-badge var-up">▲ +${pct}%</span>`;
+  if (varNum < 0) return `<span class="var-badge var-down">▼ ${pct}%</span>`;
   return '<span style="color:var(--text3);font-size:11px">—</span>';
 }
 
-/* ── RENDERIZAÇÃO PRINCIPAL ── */
-
+/* ── RENDERIZAÇÃO ── */
 function render() {
   const comprados = items.filter(i => i.done).length;
   const pendentes  = items.filter(i => !i.done).length;
@@ -147,7 +202,6 @@ function render() {
   document.getElementById('total-valor').textContent = fmt(total);
 
   renderLista();
-  renderHistorico();
 }
 
 function renderLista() {
@@ -175,14 +229,10 @@ function renderLista() {
         <td>
           <div class="td-inner">
             <span class="item-name${item.done ? ' done' : ''}">${item.nome}</span>
-            <button class="del-btn" onclick="removeItem(${item.id})" aria-label="Remover ${item.nome}">✕</button>
+            <button class="del-btn" onclick="removeItem('${item.id}')" aria-label="Remover ${item.nome}">✕</button>
           </div>
         </td>
-        <td>
-          <div class="td-inner td-center" style="font-size:13px;color:var(--text2)">
-            x${item.qtd}
-          </div>
-        </td>
+        <td><div class="td-inner td-center" style="font-size:13px;color:var(--text2)">x${item.qtd}</div></td>
         <td>
           <div class="td-inner" style="padding:8px 10px">
             <input
@@ -191,7 +241,7 @@ function renderLista() {
               inputmode="decimal"
               value="${priceVal}"
               placeholder="0,00"
-              onblur="onPriceBlur(this, ${item.id})"
+              onblur="onPriceBlur(this, '${item.id}')"
               onkeydown="if(event.key==='Enter') this.blur()"
               aria-label="Preço unitário de ${item.nome}"
             />
@@ -201,22 +251,17 @@ function renderLista() {
           <div class="td-inner td-right">
             ${totalVal
               ? `<span class="total-cell">${totalVal}</span>`
-              : `<span class="total-cell zero">sem preço</span>`
-            }
+              : `<span class="total-cell zero">sem preço</span>`}
           </div>
         </td>
-        <td>
-          <div class="td-inner td-center">${varBadge}</div>
-        </td>
+        <td><div class="td-inner td-center">${varBadge}</div></td>
         <td>
           <div class="td-inner td-center">
             <button
               class="btn-check${item.done ? ' checked' : ''}"
-              onclick="toggleItem(${item.id})"
+              onclick="toggleItem('${item.id}')"
               aria-label="${item.done ? 'Desmarcar' : 'Marcar como coletado'}"
-            >
-              ${item.done ? '✓' : '○'}
-            </button>
+            >${item.done ? '✓' : '○'}</button>
           </div>
         </td>
       </tr>`;
@@ -240,11 +285,12 @@ function renderHistorico() {
         : `<span class="var-badge var-down">▼ ${pct}%</span>`;
     }
     const origemClass = h.origem === 'tabela' ? 'inline' : '';
+    const ts = h.ts?.toDate ? h.ts.toDate() : new Date();
 
     return `
       <tr>
         <td><div class="td-inner" style="font-size:14px">${h.nome}</div></td>
-        <td><div class="td-inner" style="font-size:12px;color:var(--text2)">${formatDate(h.ts)}</div></td>
+        <td><div class="td-inner" style="font-size:12px;color:var(--text2)">${formatDate(ts)}</div></td>
         <td><div class="td-inner td-right" style="font-size:13px;font-weight:500">${fmt(h.preco)}</div></td>
         <td><div class="td-inner td-center" style="font-size:13px;color:var(--text2)">x${h.qtd}</div></td>
         <td><div class="td-inner td-center">${vb}</div></td>
@@ -256,7 +302,6 @@ function renderHistorico() {
 }
 
 /* ── TROCA DE ABA ── */
-
 function switchTab(tab) {
   document.getElementById('view-lista').style.display     = tab === 'lista'     ? 'block' : 'none';
   document.getElementById('view-historico').style.display = tab === 'historico' ? 'block' : 'none';
@@ -264,9 +309,17 @@ function switchTab(tab) {
   document.getElementById('tab-historico').className = 'tab-btn' + (tab === 'historico' ? ' active' : '');
 }
 
-/* ── NAVEGAÇÃO COM ENTER NO FORMULÁRIO ── */
+/* ── EXPOR FUNÇÕES GLOBAIS ── */
+window.addItem    = addItem;
+window.toggleItem = toggleItem;
+window.removeItem = removeItem;
+window.onPriceBlur = onPriceBlur;
+window.switchTab  = switchTab;
 
+/* ── INIT ── */
 document.addEventListener('DOMContentLoaded', () => {
+  iniciarListeners();
+
   document.getElementById('inp-nome').addEventListener('keydown', e => {
     if (e.key === 'Enter') document.getElementById('inp-qtd').focus();
   });
