@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#1a1a1a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Lista de Compras</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- CARDS -->
+  <div class="cards">
+    <div class="card">
+      <div class="card-label">Itens</div>
+      <div class="card-value cv-white" id="c-itens">0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Comprados</div>
+      <div class="card-value cv-green" id="c-comprados">0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Pendentes</div>
+      <div class="card-value cv-amber" id="c-pendentes">0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Estimado</div>
+      <div class="card-value cv-blue" id="c-estimado">R$ 0,00</div>
+    </div>
+  </div>
+
+  <!-- FORMULÁRIO -->
+  <div class="form-section">
+    <div class="form-title">Adicionar item</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="inp-nome">Produto</label>
+        <input
+          type="text"
+          id="inp-nome"
+          placeholder="Nome do produto"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="words"
+        />
+      </div>
+      <div class="form-group">
+        <label for="inp-qtd">Qtd</label>
+        <input
+          type="number"
+          id="inp-qtd"
+          placeholder="1"
+          min="1"
+          value="1"
+          inputmode="numeric"
+        />
+      </div>
+      <div class="form-group">
+        <label for="inp-preco">Preço (R$) — opcional</label>
+        <input
+          type="text"
+          id="inp-preco"
+          placeholder="0,00"
+          inputmode="decimal"
+        />
+      </div>
+      <button class="btn-add" onclick="addItem()">+ Adicionar</button>
+    </div>
+  </div>
+
+  <!-- ABAS -->
+  <div class="tab-row">
+    <button class="tab-btn active" id="tab-lista" onclick="switchTab('lista')">
+      Lista
+    </button>
+    <button class="tab-btn" id="tab-historico" onclick="switchTab('historico')">
+      Histórico de preços
+    </button>
+  </div>
+
+  <!-- VIEW: LISTA -->
+  <div id="view-lista">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:35%">Produto</th>
+            <th style="width:8%;text-align:center">Qtd</th>
+            <th style="width:19%">Preço unit.</th>
+            <th style="width:16%;text-align:right;padding-right:14px">Total</th>
+            <th style="width:13%;text-align:center">Variação</th>
+            <th style="width:9%;text-align:center">✓</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-lista">
+          <tr>
+            <td colspan="6" class="empty-msg">Adicione itens para começar sua lista.</td>
+          </tr>
+        </tbody>
+        <tfoot id="tfoot-lista" style="display:none">
+          <tr class="tfoot-row">
+            <td colspan="3">
+              <div class="td-inner td-right" style="color:var(--text2);font-size:12px">
+                Total estimado
+              </div>
+            </td>
+            <td>
+              <div class="td-inner td-right" style="color:var(--blue);font-size:15px;font-weight:600" id="total-valor">
+                R$ 0,00
+              </div>
+            </td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- VIEW: HISTÓRICO -->
+  <div id="view-historico" style="display:none">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:32%">Produto</th>
+            <th style="width:19%">Data/hora</th>
+            <th style="width:17%;text-align:right">Preço unit.</th>
+            <th style="width:10%;text-align:center">Qtd</th>
+            <th style="width:13%;text-align:center">Variação</th>
+            <th style="width:9%;text-align:center">Origem</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-hist">
+          <tr>
+            <td colspan="6" class="empty-msg">Nenhum histórico ainda.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /.app -->
+
+<script src="app.js"></script>
+</body>
+</html>
