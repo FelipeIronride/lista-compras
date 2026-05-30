@@ -80,7 +80,7 @@ function atualizarSugestoes(valor) {
   const sugestoes = items
     .filter(i => i.nome.toLowerCase().includes(termo))
     .slice(0, 6);
-  datalist.innerHTML = sugestoes.map(i => `<option value="${i.nome}"></option>`).join('');
+  datalist.innerHTML = sugestoes.map(i => `<option value="${i.nome}">${i.nome}</option>`).join('');
 }
 
 /* ── ADICIONAR ITEM ── */
