@@ -161,6 +161,7 @@ body {
   outline: none;
   font-family: inherit;
   -webkit-appearance: none;
+  width: 100%;
 }
 
 .form-group input::placeholder { color: var(--text3); }
@@ -184,6 +185,7 @@ body {
   font-family: inherit;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   -webkit-tap-highlight-color: transparent;
 }
@@ -222,27 +224,26 @@ body {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
+  width: 100%;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  min-width: 560px;
 }
 
 thead tr { background: var(--bg3); }
 
 th {
-  padding: 10px 14px;
+  padding: 10px 8px;
   text-align: left;
   font-size: 11px;
   font-weight: 600;
   color: var(--text2);
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: .04em;
   border-bottom: 1px solid var(--border);
 }
 
@@ -254,10 +255,10 @@ td {
 tr:last-child td { border-bottom: none; }
 
 .td-inner {
-  padding: 10px 14px;
+  padding: 8px;
   display: flex;
   align-items: center;
-  min-height: 52px;
+  min-height: 50px;
 }
 
 .td-center { justify-content: center; }
@@ -268,6 +269,7 @@ tr:last-child td { border-bottom: none; }
   font-size: 14px;
   font-weight: 500;
   color: var(--text);
+  word-break: break-word;
 }
 
 .item-name.done {
@@ -283,10 +285,10 @@ tr:last-child td { border-bottom: none; }
   border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--text);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   text-align: right;
-  padding: 0 8px;
+  padding: 0 6px;
   font-family: inherit;
   outline: none;
   transition: border .15s;
@@ -303,7 +305,7 @@ tr:last-child td { border-bottom: none; }
 
 /* ── CÉLULAS DE TOTAL ── */
 .total-cell {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text);
 }
@@ -312,7 +314,7 @@ tr:last-child td { border-bottom: none; }
   color: var(--text3);
   font-weight: 400;
   font-style: italic;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 /* ── BADGES ── */
@@ -320,9 +322,9 @@ tr:last-child td { border-bottom: none; }
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border-radius: 4px;
 }
 
@@ -346,8 +348,8 @@ tr:last-child td { border-bottom: none; }
 
 /* ── BOTÕES DA TABELA ── */
 .btn-check {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: 2px solid var(--border2);
   background: transparent;
@@ -356,8 +358,9 @@ tr:last-child td { border-bottom: none; }
   align-items: center;
   justify-content: center;
   color: var(--text2);
-  font-size: 16px;
+  font-size: 15px;
   transition: all .15s;
+  flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -370,18 +373,19 @@ tr:last-child td { border-bottom: none; }
 .btn-check:hover:not(.checked) { border-color: var(--text2); }
 
 .del-btn {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: none;
   background: transparent;
   cursor: pointer;
   color: var(--text3);
-  font-size: 14px;
+  font-size: 13px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-left: 6px;
+  margin-left: 4px;
+  flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -392,11 +396,12 @@ tr:last-child td { border-bottom: none; }
   font-size: 13px;
   color: var(--text2);
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 4px 6px;
   border-radius: 6px;
   border: 1px solid transparent;
   transition: all .15s;
   user-select: none;
+  white-space: nowrap;
 }
 
 .qtd-label:hover {
@@ -420,63 +425,124 @@ tr:last-child td { border-bottom: none; }
 }
 
 /* =============================================
-   RESPONSIVIDADE MOBILE
+   MOBILE — até 600px
+   Tudo se adapta sem scroll horizontal
    ============================================= */
 
 @media (max-width: 600px) {
-  .app { padding: 1rem 0.75rem; }
+
+  .app { padding: 0.875rem 0.625rem; }
 
   /* Cards 2x2 */
   .cards {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
+    margin-bottom: 1rem;
   }
 
-  .card { padding: 0.875rem 1rem; }
-  .card-value { font-size: 22px; }
+  .card { padding: 0.75rem; }
+  .card-label { font-size: 11px; }
+  .card-value { font-size: 20px; }
 
-  /* Formulário empilhado */
-  .form-section { padding: 1rem; }
+  /* Pesquisa */
+  .search-bar { margin-bottom: 1rem; }
+
+  /* Formulário: tudo em coluna */
+  .form-section { padding: 0.875rem; margin-bottom: 1rem; }
 
   .form-row {
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 10px;
   }
 
-  /* Produto ocupa linha inteira */
-  .form-row .form-group:first-child {
-    grid-column: 1 / -1;
-  }
+  .form-row .form-group { width: 100%; }
 
-  /* Botão ocupa linha inteira */
   .btn-add {
-    grid-column: 1 / -1;
-    justify-content: center;
+    width: 100%;
     height: 48px;
     font-size: 16px;
   }
 
-  /* Abas full width */
-  .tab-row { gap: 6px; }
+  /* Abas */
+  .tab-row { gap: 6px; margin-bottom: 0.875rem; }
   .tab-btn {
     flex: 1;
     text-align: center;
-    padding: 10px 8px;
+    padding: 10px 4px;
     font-size: 13px;
   }
 
-  /* Tabela scroll horizontal */
+  /* Tabela sem scroll, adaptada ao celular */
   .table-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
+    border-radius: var(--radius);
   }
 
   table {
-    min-width: 520px;
+    table-layout: auto;
+    width: 100%;
+  }
+
+  /* Cabeçalhos menores */
+  th {
+    padding: 8px 4px;
+    font-size: 10px;
+    letter-spacing: 0;
+  }
+
+  .td-inner {
+    padding: 6px 4px;
+    min-height: 46px;
+  }
+
+  /* Coluna produto: flex para caber nome + botão remover */
+  .item-name {
+    font-size: 13px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .del-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    margin-left: 2px;
+  }
+
+  /* Qtd menor */
+  .qtd-label {
+    font-size: 12px;
+    padding: 3px 4px;
+  }
+
+  /* Input de preço ocupa o espaço disponível */
+  .price-input {
+    font-size: 13px;
+    height: 34px;
+    padding: 0 4px;
+  }
+
+  /* Total menor */
+  .total-cell      { font-size: 12px; }
+  .total-cell.zero { font-size: 10px; }
+
+  /* Badge de variação compacto */
+  .var-badge { font-size: 9px; padding: 2px 3px; }
+
+  /* Botão check menor */
+  .btn-check {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
   }
 }
 
 @media (max-width: 380px) {
-  .card-label { font-size: 11px; }
-  .card-value { font-size: 20px; }
+  .card-value { font-size: 18px; }
+  .item-name  { font-size: 12px; }
+  .price-input { font-size: 12px; }
 }
