@@ -53,14 +53,17 @@
     <div class="form-row">
       <div class="form-group">
         <label for="inp-nome">Produto</label>
-        <input
-          type="text" id="inp-nome"
-          placeholder="Nome do produto"
-          autocomplete="off" autocorrect="off" autocapitalize="words"
-          oninput="atualizarSugestoes(this.value)"
-          list="sugestoes-produtos"
-        />
-        <datalist id="sugestoes-produtos"></datalist>
+        <!-- wrapper para o autocomplete customizado -->
+        <div class="autocomplete-wrap">
+          <input
+            type="text" id="inp-nome"
+            placeholder="Nome do produto"
+            autocomplete="off" autocorrect="off" autocapitalize="words"
+            oninput="atualizarSugestoes(this.value)"
+            onkeydown="navegarSugestoes(event)"
+          />
+          <ul id="sugestoes-lista" class="sugestoes-dropdown" style="display:none"></ul>
+        </div>
       </div>
       <div class="form-group">
         <label for="inp-qtd">Qtd</label>

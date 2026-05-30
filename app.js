@@ -1,5 +1,5 @@
 /* =============================================
-   LISTA DE COMPRAS — app.js v4
+   LISTA DE COMPRAS — app.js v5
    ============================================= */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
@@ -28,6 +28,7 @@ let items    = [];
 let hist     = [];
 let priceMap = {};
 let filtro   = '';
+let sugestaoIndex = -1;
 
 /* ── UTILS ── */
 function fmt(v) {
@@ -46,7 +47,7 @@ function gerarId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
-/* ── ORDENAÇÃO: alfabético, coletados no final ── */
+/* ── ORDENAÇÃO ── */
 function ordenarItems(lista) {
   return [...lista].sort((a, b) => {
     if (a.done !== b.done) return a.done ? 1 : -1;
@@ -71,16 +72,87 @@ function iniciarListeners() {
   });
 }
 
-/* ── AUTOSUGESTÃO ── */
+/* ── AUTOCOMPLETE CUSTOMIZADO ── */
 function atualizarSugestoes(valor) {
-  const datalist = document.getElementById('sugestoes-produtos');
-  if (!datalist) return;
+  const dropdown = document.getElementById('sugestoes-lista');
+  sugestaoIndex = -1;
   const termo = valor.toLowerCase().trim();
-  if (!termo) { datalist.innerHTML = ''; return; }
+
+  if (!termo || items.length === 0) {
+    fecharSugestoes();
+    return;
+  }
+
   const sugestoes = items
     .filter(i => i.nome.toLowerCase().includes(termo))
     .slice(0, 6);
-  datalist.innerHTML = sugestoes.map(i => `<option value="${i.nome}">${i.nome}</option>`).join('');
+
+  if (sugestoes.length === 0) {
+    fecharSugestoes();
+    return;
+  }
+
+  dropdown.innerHTML = sugestoes.map((i, idx) => `
+    <li
+      class="sugestao-item"
+      data-index="${idx}"
+      data-nome="${i.nome}"
+      onmousedown="selecionarSugestao('${i.nome}')"
+      ontouchstart="selecionarSugestao('${i.nome}')"
+    >${i.nome}</li>
+  `).join('');
+
+  dropdown.style.display = 'block';
+}
+
+function selecionarSugestao(nome) {
+  const input = document.getElementById('inp-nome');
+  input.value = nome;
+  fecharSugestoes();
+  document.getElementById('inp-qtd').focus();
+}
+
+function fecharSugestoes() {
+  const dropdown = document.getElementById('sugestoes-lista');
+  if (dropdown) {
+    dropdown.style.display = 'none';
+    dropdown.innerHTML = '';
+  }
+  sugestaoIndex = -1;
+}
+
+function navegarSugestoes(e) {
+  const dropdown = document.getElementById('sugestoes-lista');
+  const itens = dropdown?.querySelectorAll('.sugestao-item');
+
+  if (!itens || itens.length === 0) {
+    if (e.key === 'Enter') addItem();
+    return;
+  }
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    sugestaoIndex = Math.min(sugestaoIndex + 1, itens.length - 1);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    sugestaoIndex = Math.max(sugestaoIndex - 1, -1);
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (sugestaoIndex >= 0 && itens[sugestaoIndex]) {
+      selecionarSugestao(itens[sugestaoIndex].dataset.nome);
+    } else {
+      fecharSugestoes();
+      addItem();
+    }
+    return;
+  } else if (e.key === 'Escape') {
+    fecharSugestoes();
+    return;
+  }
+
+  itens.forEach((el, i) => {
+    el.classList.toggle('sugestao-ativa', i === sugestaoIndex);
+  });
 }
 
 /* ── ADICIONAR ITEM ── */
@@ -113,7 +185,7 @@ async function addItem() {
   nomeEl.value  = '';
   qtdEl.value   = '1';
   precoEl.value = '';
-  document.getElementById('sugestoes-produtos').innerHTML = '';
+  fecharSugestoes();
   nomeEl.focus();
 }
 
@@ -174,13 +246,12 @@ async function salvarQtd(id) {
   await updateDoc(doc(db, 'items', id), { qtd: novaQtd });
 }
 
-/* ── TOGGLE COLETADO ── */
+/* ── TOGGLE / REMOVER ── */
 async function toggleItem(id) {
   const item = items.find(i => i.id === id);
   if (item) await updateDoc(doc(db, 'items', id), { done: !item.done });
 }
 
-/* ── REMOVER ── */
 async function removeItem(id) {
   await deleteDoc(doc(db, 'items', id));
 }
@@ -205,7 +276,7 @@ function buildVarBadge(varNum, preco) {
   return '<span style="color:var(--text3);font-size:11px">—</span>';
 }
 
-/* ── RENDER PRINCIPAL ── */
+/* ── RENDER ── */
 function render() {
   const comprados = items.filter(i => i.done).length;
   const pendentes  = items.filter(i => !i.done).length;
@@ -260,9 +331,7 @@ function renderLista() {
         </td>
         <td>
           <div class="td-inner td-center" id="qtd-cell-${item.id}">
-            <span class="qtd-label" onclick="editarQtd('${item.id}')" title="Clique para editar">
-              x${item.qtd}
-            </span>
+            <span class="qtd-label" onclick="editarQtd('${item.id}')" title="Clique para editar">x${item.qtd}</span>
           </div>
         </td>
         <td>
@@ -336,22 +405,27 @@ function switchTab(tab) {
 }
 
 /* ── GLOBAIS ── */
-window.addItem         = addItem;
-window.toggleItem      = toggleItem;
-window.removeItem      = removeItem;
-window.onPriceBlur     = onPriceBlur;
-window.editarQtd       = editarQtd;
-window.salvarQtd       = salvarQtd;
-window.switchTab       = switchTab;
-window.atualizarFiltro = atualizarFiltro;
+window.addItem            = addItem;
+window.toggleItem         = toggleItem;
+window.removeItem         = removeItem;
+window.onPriceBlur        = onPriceBlur;
+window.editarQtd          = editarQtd;
+window.salvarQtd          = salvarQtd;
+window.switchTab          = switchTab;
+window.atualizarFiltro    = atualizarFiltro;
 window.atualizarSugestoes = atualizarSugestoes;
+window.selecionarSugestao = selecionarSugestao;
+window.navegarSugestoes   = navegarSugestoes;
 
 /* ── INIT ── */
 document.addEventListener('DOMContentLoaded', () => {
   iniciarListeners();
-  document.getElementById('inp-nome').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('inp-qtd').focus();
+
+  // Fechar sugestões ao clicar fora
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.autocomplete-wrap')) fecharSugestoes();
   });
+
   document.getElementById('inp-qtd').addEventListener('keydown', e => {
     if (e.key === 'Enter') document.getElementById('inp-preco').focus();
   });

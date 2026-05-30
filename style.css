@@ -604,3 +604,47 @@ tr:last-child td { border-bottom: none; }
   .item-name  { font-size: 12px; }
   .price-input { font-size: 12px; }
 }
+
+/* ── AUTOCOMPLETE CUSTOMIZADO ── */
+.autocomplete-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.autocomplete-wrap input {
+  width: 100%;
+}
+
+.sugestoes-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  list-style: none;
+  z-index: 999;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.sugestao-item {
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background .1s;
+}
+
+.sugestao-item:last-child {
+  border-bottom: none;
+}
+
+.sugestao-item:hover,
+.sugestao-item.sugestao-ativa {
+  background: var(--bg4, #383838);
+  color: var(--blue);
+}
