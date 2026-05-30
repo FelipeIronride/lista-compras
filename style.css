@@ -265,6 +265,14 @@ tr:last-child td { border-bottom: none; }
 .td-right  { justify-content: flex-end; }
 
 /* ── NOMES ── */
+.item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .item-name {
   font-size: 14px;
   font-weight: 500;
@@ -276,6 +284,8 @@ tr:last-child td { border-bottom: none; }
   text-decoration: line-through;
   color: var(--text3);
 }
+
+.item-total-mobile { display: none; }
 
 /* ── PREÇO INPUT NA TABELA ── */
 .price-input {
@@ -473,37 +483,83 @@ tr:last-child td { border-bottom: none; }
     font-size: 13px;
   }
 
-  /* Tabela sem scroll, adaptada ao celular */
-  .table-wrap {
-    overflow: hidden;
+  /* ═══ LISTA → CARD LAYOUT ═══ */
+  #view-lista .table-wrap {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  #view-lista table { display: block; }
+  #view-lista thead { display: none; }
+  #view-lista tbody { display: flex; flex-direction: column; gap: 8px; }
+  #view-lista tfoot { display: block; }
+
+  #view-lista tbody tr {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
+    padding: 10px;
   }
 
-  table {
-    table-layout: auto;
-    width: 100%;
+  #view-lista tbody td {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    border-bottom: none;
   }
 
-  /* Cabeçalhos menores */
-  th {
-    padding: 8px 4px;
-    font-size: 10px;
-    letter-spacing: 0;
+  #view-lista tbody td:nth-child(1) { flex: 1; min-width: 0; }
+  #view-lista tbody td:nth-child(2) { flex: 0 0 auto; }
+  #view-lista tbody td:nth-child(3) { flex: 0 0 92px; }
+  #view-lista tbody td:nth-child(4),
+  #view-lista tbody td:nth-child(5) { display: none; }
+  #view-lista tbody td:nth-child(6) { flex: 0 0 auto; }
+
+  #view-lista tbody .td-inner { padding: 0; min-height: unset; }
+
+  /* Tfoot como barra de total */
+  #view-lista .tfoot-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-top: 4px;
   }
 
-  .td-inner {
-    padding: 6px 4px;
-    min-height: 46px;
+  #view-lista .tfoot-row td {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    border: none;
   }
 
-  /* Coluna produto: flex para caber nome + botão remover */
+  #view-lista .tfoot-row td:nth-child(3) { display: none; }
+  #view-lista .tfoot-row .td-inner { padding: 0; min-height: unset; }
+
+  /* Item info no card */
+  .item-info { overflow: hidden; }
+
   .item-name {
     font-size: 13px;
-    flex: 1;
-    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: block;
+  }
+
+  .item-total-mobile {
+    display: block;
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 1px;
   }
 
   .del-btn {
@@ -513,31 +569,33 @@ tr:last-child td { border-bottom: none; }
     margin-left: 2px;
   }
 
-  /* Qtd menor */
   .qtd-label {
     font-size: 12px;
     padding: 3px 4px;
   }
 
-  /* Input de preço ocupa o espaço disponível */
   .price-input {
     font-size: 13px;
     height: 34px;
     padding: 0 4px;
+    width: 100%;
   }
 
-  /* Total menor */
-  .total-cell      { font-size: 12px; }
-  .total-cell.zero { font-size: 10px; }
-
-  /* Badge de variação compacto */
-  .var-badge { font-size: 9px; padding: 2px 3px; }
-
-  /* Botão check menor */
   .btn-check {
     width: 30px;
     height: 30px;
     font-size: 14px;
+  }
+
+  /* ═══ HISTÓRICO → SCROLL HORIZONTAL ═══ */
+  #view-historico .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #view-historico table {
+    min-width: 480px;
+    table-layout: auto;
   }
 }
 

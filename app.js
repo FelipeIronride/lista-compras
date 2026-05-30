@@ -251,7 +251,10 @@ function renderLista() {
       <tr>
         <td>
           <div class="td-inner">
-            <span class="item-name${item.done ? ' done' : ''}">${item.nome}</span>
+            <div class="item-info">
+              <span class="item-name${item.done ? ' done' : ''}">${item.nome}</span>
+              ${totalVal ? `<small class="item-total-mobile">${totalVal}</small>` : ''}
+            </div>
             <button class="del-btn" onclick="removeItem('${item.id}')" aria-label="Remover ${item.nome}">✕</button>
           </div>
         </td>
