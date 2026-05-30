@@ -82,6 +82,37 @@ body {
 .cv-amber { color: var(--amber); }
 .cv-blue  { color: var(--blue); }
 
+/* ── BARRA DE PESQUISA ── */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 0 14px;
+  margin-bottom: 1.25rem;
+  height: 46px;
+}
+
+.search-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.search-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 16px;
+  font-family: inherit;
+  height: 100%;
+}
+
+.search-bar input::placeholder { color: var(--text3); }
+
 /* ── FORMULÁRIO ── */
 .form-section {
   background: var(--bg2);
@@ -126,7 +157,7 @@ body {
   border-radius: var(--radius);
   background: var(--bg3);
   color: var(--text);
-  font-size: 16px; /* 16px evita zoom no iOS */
+  font-size: 16px;
   outline: none;
   font-family: inherit;
   -webkit-appearance: none;
@@ -157,7 +188,7 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-.btn-add:hover { background: #cccccc; }
+.btn-add:hover  { background: #cccccc; }
 .btn-add:active { background: #aaaaaa; }
 
 /* ── ABAS ── */
@@ -191,7 +222,6 @@ body {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -233,7 +263,7 @@ tr:last-child td { border-bottom: none; }
 .td-center { justify-content: center; }
 .td-right  { justify-content: flex-end; }
 
-/* ── NOMES E PREÇOS ── */
+/* ── NOMES ── */
 .item-name {
   font-size: 14px;
   font-weight: 500;
@@ -245,6 +275,7 @@ tr:last-child td { border-bottom: none; }
   color: var(--text3);
 }
 
+/* ── PREÇO INPUT NA TABELA ── */
 .price-input {
   width: 100%;
   height: 36px;
@@ -252,7 +283,7 @@ tr:last-child td { border-bottom: none; }
   border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--text);
-  font-size: 16px; /* evita zoom no iOS */
+  font-size: 16px;
   font-weight: 500;
   text-align: right;
   padding: 0 8px;
@@ -267,9 +298,10 @@ tr:last-child td { border-bottom: none; }
   box-shadow: 0 0 0 2px rgba(96,165,250,.12);
 }
 
-.price-input.filled { border-color: var(--border2); }
+.price-input.filled  { border-color: var(--border2); }
 .price-input::placeholder { color: var(--text3); }
 
+/* ── CÉLULAS DE TOTAL ── */
 .total-cell {
   font-size: 14px;
   font-weight: 600;
@@ -294,7 +326,7 @@ tr:last-child td { border-bottom: none; }
   border-radius: 4px;
 }
 
-.var-up   { background: var(--red-bg); color: var(--red); }
+.var-up   { background: var(--red-bg);   color: var(--red); }
 .var-down { background: var(--green-bg); color: var(--green); }
 
 .hist-source {
@@ -355,6 +387,24 @@ tr:last-child td { border-bottom: none; }
 
 .del-btn:hover { color: var(--red); background: var(--red-bg); }
 
+/* ── QUANTIDADE CLICÁVEL ── */
+.qtd-label {
+  font-size: 13px;
+  color: var(--text2);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all .15s;
+  user-select: none;
+}
+
+.qtd-label:hover {
+  border-color: var(--border2);
+  color: var(--text);
+  background: var(--bg3);
+}
+
 /* ── RODAPÉ DA TABELA ── */
 .tfoot-row td {
   border-top: 1px solid var(--border2);
@@ -376,7 +426,7 @@ tr:last-child td { border-bottom: none; }
 @media (max-width: 600px) {
   .app { padding: 1rem 0.75rem; }
 
-  /* Cards em 2x2 no mobile */
+  /* Cards 2x2 */
   .cards {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
@@ -385,12 +435,11 @@ tr:last-child td { border-bottom: none; }
   .card { padding: 0.875rem 1rem; }
   .card-value { font-size: 22px; }
 
-  /* Formulário empilhado no mobile */
+  /* Formulário empilhado */
   .form-section { padding: 1rem; }
 
   .form-row {
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto auto;
     gap: 10px;
   }
 
@@ -399,7 +448,7 @@ tr:last-child td { border-bottom: none; }
     grid-column: 1 / -1;
   }
 
-  /* Botão adicionar ocupa linha inteira */
+  /* Botão ocupa linha inteira */
   .btn-add {
     grid-column: 1 / -1;
     justify-content: center;
@@ -407,7 +456,7 @@ tr:last-child td { border-bottom: none; }
     font-size: 16px;
   }
 
-  /* Abas full width no mobile */
+  /* Abas full width */
   .tab-row { gap: 6px; }
   .tab-btn {
     flex: 1;
@@ -415,58 +464,19 @@ tr:last-child td { border-bottom: none; }
     padding: 10px 8px;
     font-size: 13px;
   }
+
+  /* Tabela scroll horizontal */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    min-width: 520px;
+  }
 }
 
 @media (max-width: 380px) {
   .card-label { font-size: 11px; }
   .card-value { font-size: 20px; }
-}
-
-/* ── BARRA DE PESQUISA ── */
-.search-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 0 14px;
-  margin-bottom: 1.25rem;
-  height: 46px;
-}
-
-.search-icon {
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-.search-bar input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text);
-  font-size: 15px;
-  font-family: inherit;
-  height: 100%;
-}
-
-.search-bar input::placeholder { color: var(--text3); }
-
-/* ── QUANTIDADE CLICÁVEL ── */
-.qtd-label {
-  font-size: 13px;
-  color: var(--text2);
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  transition: all .15s;
-  user-select: none;
-}
-
-.qtd-label:hover {
-  border-color: var(--border2);
-  color: var(--text);
-  background: var(--bg3);
 }
