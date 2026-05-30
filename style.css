@@ -376,6 +376,7 @@ tr:last-child td { border-bottom: none; }
 @media (max-width: 600px) {
   .app { padding: 1rem 0.75rem; }
 
+  /* Cards em 2x2 no mobile */
   .cards {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
@@ -384,19 +385,29 @@ tr:last-child td { border-bottom: none; }
   .card { padding: 0.875rem 1rem; }
   .card-value { font-size: 22px; }
 
+  /* Formulário empilhado no mobile */
   .form-section { padding: 1rem; }
 
   .form-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
     gap: 10px;
   }
 
+  /* Produto ocupa linha inteira */
+  .form-row .form-group:first-child {
+    grid-column: 1 / -1;
+  }
+
+  /* Botão adicionar ocupa linha inteira */
   .btn-add {
+    grid-column: 1 / -1;
     justify-content: center;
     height: 48px;
     font-size: 16px;
   }
 
+  /* Abas full width no mobile */
   .tab-row { gap: 6px; }
   .tab-btn {
     flex: 1;
@@ -404,17 +415,58 @@ tr:last-child td { border-bottom: none; }
     padding: 10px 8px;
     font-size: 13px;
   }
-
-  .table-wrap {
-    overflow-x: hidden;
-  }
-
-  table {
-    min-width: unset;
-  }
 }
 
 @media (max-width: 380px) {
   .card-label { font-size: 11px; }
   .card-value { font-size: 20px; }
+}
+
+/* ── BARRA DE PESQUISA ── */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 0 14px;
+  margin-bottom: 1.25rem;
+  height: 46px;
+}
+
+.search-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.search-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 15px;
+  font-family: inherit;
+  height: 100%;
+}
+
+.search-bar input::placeholder { color: var(--text3); }
+
+/* ── QUANTIDADE CLICÁVEL ── */
+.qtd-label {
+  font-size: 13px;
+  color: var(--text2);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all .15s;
+  user-select: none;
+}
+
+.qtd-label:hover {
+  border-color: var(--border2);
+  color: var(--text);
+  background: var(--bg3);
 }
