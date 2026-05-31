@@ -416,6 +416,7 @@ window.atualizarFiltro    = atualizarFiltro;
 window.atualizarSugestoes = atualizarSugestoes;
 window.selecionarSugestao = selecionarSugestao;
 window.navegarSugestoes   = navegarSugestoes;
+window.limparLista = limparLista;
 
 /* ── INIT ── */
 document.addEventListener('DOMContentLoaded', () => {
@@ -433,3 +434,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter') addItem();
   });
 });
+
+/*---LIMPA LISTA---*/
+async function limparLista() {
+  if (!confirm('Deseja limpar toda a lista?')) return;
+  const promises = items.map(i => deleteDoc(doc(db, 'items', i.id)));
+  await Promise.all(promises);
+}
